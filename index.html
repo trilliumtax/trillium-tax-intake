@@ -1,1 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trillium Tax Services — Client Intake 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #0d6e6e;
+    --teal-light: #e8f5f5;
+    --teal-mid: #1a9090;
+    --dark: #0f2027;
+    --text: #1e2d2d;
+    --muted: #6b8080;
+    --border: #cfe0e0;
+    --bg: #f2f9f9;
+    --white: #fff;
+    --error: #dc2626;
+    --success: #059669;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  .header { background: var(--dark); padding: 36px 20px 30px; text-align: center; position: relative; overflow: hidden; }
+  .header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--teal-mid), #06d6a0, var(--teal-mid)); }
+  .logo { font-family: 'Playfair Display', serif; font-size: 42px; color: #fff; letter-spacing: -1px; }
+  .logo-sub { font-size: 11px; letter-spacing: 0.35em; color: #06d6a0; font-weight: 800; text-transform: uppercase; margin-top: 4px; }
+  .header-desc { margin-top: 12px; font-size: 13px; color: rgba(255,255,255,0.55); max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+  .services-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .srv-pill { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); }
+
+  /* PROGRESS */
+  .progress-wrap { background: #fff; border-bottom: 1px solid var(--border); padding: 12px 20px; position: sticky; top: 0; z-index: 100; }
+  .progress-bar-bg { background: var(--border); border-radius: 99px; height: 6px; overflow: hidden; max-width: 600px; margin: 0 auto 6px; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--teal), #06d6a0); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+  .progress-label { text-align: center; font-size: 12px; color: var(--muted); font-weight: 700; }
+
+  /* FORM WRAP */
+  .form-wrap { max-width: 660px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .page-title { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--teal); margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: var(--muted); margin-bottom: 22px; line-height: 1.6; }
+
+  /* FIELDS */
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .field label .req { color: var(--error); margin-left: 2px; }
+  .field label .tag { font-size: 11px; color: var(--teal); font-weight: 700; margin-left: 6px; }
+  .field input[type="text"], .field input[type="email"], .field input[type="tel"],
+  .field input[type="date"], .field input[type="number"], .field select, .field textarea {
+    width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
+    border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 14px;
+    color: var(--text); background: #fff; transition: border-color 0.2s; outline: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--teal-mid); }
+  .field textarea { resize: vertical; min-height: 80px; }
+  .field .hint { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  .field .err-msg { font-size: 11px; color: var(--error); margin-top: 4px; font-weight: 700; display: none; }
+  .field.error input, .field.error select, .field.error textarea { border-color: var(--error); }
+  .field.error .err-msg { display: block; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media(max-width:500px) { .field-row, .field-row3 { grid-template-columns: 1fr; } }
+
+  /* CHOICE OPTIONS */
+  .choice-group { display: flex; flex-direction: column; gap: 8px; }
+  .choice-opt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 11px 14px; border: 1.5px solid var(--border);
+    border-radius: 10px; cursor: pointer; transition: all 0.15s;
+    background: #fff; font-size: 13px; font-weight: 600;
+    line-height: 1.4; user-select: none;
+  }
+  .choice-opt:hover { border-color: var(--teal-mid); background: var(--teal-light); }
+  .choice-opt.selected { border-color: var(--teal); background: var(--teal-light); }
+  .choice-opt input { accent-color: var(--teal); width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+  .choice-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media(max-width:500px) { .choice-2col { grid-template-columns: 1fr; } }
+
+  /* SECTION DIVIDER */
+  .sec-div { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--teal); border-bottom: 2px solid var(--teal-light); padding-bottom: 6px; margin: 24px 0 16px; }
+
+  /* ALERTS */
+  .alert { border-radius: 10px; padding: 12px 15px; font-size: 13px; line-height: 1.6; margin-bottom: 16px; font-weight: 600; }
+  .alert-info { background: var(--teal-light); border-left: 4px solid var(--teal); color: #0a4040; }
+  .alert-warn { background: #fffbeb; border-left: 4px solid #f59e0b; color: #78350f; }
+  .alert-green { background: #ecfdf5; border-left: 4px solid var(--success); color: #064e3b; }
+
+  /* CARD SECTION */
+  .card-sec { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 18px; margin: 12px 0; }
+  .card-sec-title { font-size: 14px; font-weight: 800; color: var(--teal); margin-bottom: 14px; }
+
+  /* CONDITIONAL */
+  .cond { display: none; }
+  .cond.show { display: block; animation: fadeIn 0.25s ease; }
+
+  /* REFERRAL BADGE */
+  .ref-badge { background: linear-gradient(135deg, #0d6e6e, #1a9090); border-radius: 14px; padding: 20px; color: #fff; margin-bottom: 18px; text-align: center; }
+  .ref-badge .rb-title { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; opacity: 0.8; text-transform: uppercase; margin-bottom: 6px; }
+  .ref-badge .rb-offer { font-family: 'Playfair Display', serif; font-size: 30px; }
+  .ref-badge .rb-desc { font-size: 12px; opacity: 0.8; margin-top: 8px; line-height: 1.6; }
+  .ref-input { background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.4); border-radius: 10px; color: #fff; font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 800; text-align: center; width: 100%; padding: 11px; margin-top: 14px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .ref-input::placeholder { color: rgba(255,255,255,0.45); font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+  .ref-input:focus { outline: none; border-color: #fff; }
+  .ref-msg { font-size: 12px; margin-top: 6px; font-weight: 700; }
+  .ref-msg.ok { color: #6ee7b7; }
+  .ref-msg.bad { color: #fca5a5; }
+
+  /* BUTTONS */
+  .btn-row { display: flex; gap: 12px; margin-top: 26px; justify-content: flex-end; }
+  .btn { padding: 12px 28px; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; border: none; transition: all 0.2s; }
+  .btn-primary { background: var(--teal); color: #fff; }
+  .btn-primary:hover { background: var(--teal-mid); transform: translateY(-1px); }
+  .btn-secondary { background: var(--border); color: var(--text); }
+  .btn-secondary:hover { background: #b8d0d0; }
+  .btn-submit { background: #059669; color: #fff; padding: 14px 36px; font-size: 15px; }
+  .btn-submit:hover { background: #047857; transform: translateY(-1px); }
+  .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* SUCCESS */
+  .success-wrap { text-align: center; padding: 48px 20px; }
+  .success-icon { font-size: 72px; margin-bottom: 16px; }
+  .success-wrap h2 { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--teal); margin-bottom: 10px; }
+  .success-wrap p { font-size: 14px; color: var(--muted); line-height: 1.8; max-width: 420px; margin: 0 auto 10px; }
+  .success-code { background: var(--teal-light); border: 2px solid var(--teal); border-radius: 12px; padding: 16px 24px; display: inline-block; margin-top: 16px; }
+  .success-code .sc-lbl { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--teal); }
+  .success-code .sc-val { font-size: 18px; font-weight: 800; color: var(--teal); letter-spacing: 0.15em; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Trillium</div>
+  <div class="logo-sub">Tax Services — 2025 Tax Year</div>
+  <div class="header-desc">Complete this form to get started. Takes about 3 minutes. All information is 100% confidential and used only for tax filing.</div>
+  <div class="services-row">
+    <span class="srv-pill">✅ Newcomers</span>
+    <span class="srv-pill">✅ International Students</span>
+    <span class="srv-pill">✅ Work Permit Holders</span>
+    <span class="srv-pill">✅ PGWP Holders</span>
+    <span class="srv-pill">✅ Permanent Residents</span>
+    <span class="srv-pill">✅ Uber / Self-Employed</span>
+    <span class="srv-pill">✅ Married / Common-Law</span>
+    <span class="srv-pill">✅ All Provinces</span>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+  <div class="progress-label" id="progressLabel">Step 1 of 10</div>
+</div>
+
+<div class="form-wrap">
+
+<!-- ===== PAGE 1: PERSONAL INFO ===== -->
+<div class="page active" id="page1">
+  <div class="page-title">Personal information</div>
+  <p class="page-sub">Start with your basic details. Fields marked * are required.</p>
+
+  <div class="field-row">
+    <div class="field" id="f-fname"><label>First name <span class="req">*</span></label><input type="text" id="fname" placeholder="e.g. John"><div class="err-msg">Required</div></div>
+    <div class="field" id="f-lname"><label>Last name <span class="req">*</span></label><input type="text" id="lname" placeholder="e.g. Smith"><div class="err-msg">Required</div></div>
+  </div>
+
+  <div class="field" id="f-email">
+    <label>Email address <span class="req">*</span></label>
+    <input type="email" id="email" placeholder="your@email.com">
+    <div class="err-msg">Please enter a valid email</div>
+  </div>
+
+  <div class="field" id="f-phone">
+    <label>Phone number <span class="req">*</span></label>
+    <input type="tel" id="phone" placeholder="e.g. 647-555-0123">
+    <div class="err-msg">Required</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field" id="f-dob">
+      <label>Date of birth <span class="req">*</span></label>
+      <input type="date" id="dob">
+      <div class="err-msg">Required</div>
+    </div>
+    <div class="field" id="f-sin">
+      <label>SIN (Social Insurance Number) <span class="req">*</span></label>
+      <input type="text" id="sin" placeholder="9 digits" maxlength="9">
+      <div class="hint">🔒 Kept strictly confidential — used only for tax filing</div>
+      <div class="err-msg">Please enter your 9-digit SIN</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Have you filed taxes in Canada before? <span class="req">*</span></label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="filedBefore" value="Yes — I filed last year"> Yes — I filed last year</label>
+      <label class="choice-opt"><input type="radio" name="filedBefore" value="No — This is my first time filing in Canada"> No — This is my first time filing in Canada</label>
+    </div>
+  </div>
+
+  <div class="btn-row"><button class="btn btn-primary" onclick="goTo(2)">Next →</button></div>
+</div>
+
+<!-- ===== PAGE 2: ADDRESS ===== -->
+<div class="page" id="page2">
+  <div class="page-title">Your address</div>
+  <p class="page-sub">Please provide your address as of December 31, 2025.</p>
+
+  <div class="field" id="f-address"><label>Street address <span class="req">*</span></label><input type="text" id="address" placeholder="e.g. 123 Main Street, Apt 4"><div class="err-msg">Required</div></div>
+
+  <div class="field-row">
+    <div class="field" id="f-city"><label>City <span class="req">*</span></label><input type="text" id="city" placeholder="e.g. Brampton"><div class="err-msg">Required</div></div>
+    <div class="field" id="f-postal"><label>Postal code <span class="req">*</span></label><input type="text" id="postal" placeholder="e.g. L6X 1A2" maxlength="7"><div class="err-msg">Required</div></div>
+  </div>
+
+  <div class="field" id="f-province">
+    <label>Province you lived in on December 31, 2025 <span class="req">*</span></label>
+    <div class="hint" style="margin-bottom:8px;">⚠️ Very important — determines your provincial tax even if you have moved since.</div>
+    <select id="province">
+      <option value="">— Select province —</option>
+      <option>Alberta</option><option>British Columbia</option><option>Manitoba</option>
+      <option>New Brunswick</option><option>Newfoundland and Labrador</option>
+      <option>Northwest Territories</option><option>Nova Scotia</option><option>Nunavut</option>
+      <option>Ontario</option><option>Prince Edward Island</option>
+      <option>Saskatchewan</option><option>Yukon</option>
+    </select>
+    <div class="err-msg">Please select your province</div>
+  </div>
+
+  <div class="field">
+    <label>Did you pay rent in Ontario in 2025?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="rent" value="Yes — I paid rent" onchange="show('c-rent',true)"> Yes — I paid rent</label>
+      <label class="choice-opt"><input type="radio" name="rent" value="No" onchange="show('c-rent',false)"> No — I own or lived with family</label>
+    </div>
+  </div>
+  <div class="cond" id="c-rent">
+    <div class="card-sec">
+      <div class="card-sec-title">🏠 Rent details — for Ontario Trillium Benefit</div>
+      <div class="field-row">
+        <div class="field"><label>Landlord's full name</label><input type="text" id="landlordName" placeholder="e.g. ABC Property Management"></div>
+        <div class="field"><label>Monthly rent amount (CAD)</label><input type="number" id="rentAmt" placeholder="e.g. 1200"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Did you own a home in 2025?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="ownHome" value="Yes"> Yes</label>
+      <label class="choice-opt"><input type="radio" name="ownHome" value="No"> No</label>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(1)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(3)">Next →</button>
+  </div>
+</div>
+
+<!-- ===== PAGE 3: IMMIGRATION ===== -->
+<div class="page" id="page3">
+  <div class="page-title">Immigration & residency</div>
+  <p class="page-sub">This helps us file the correct return type for your situation.</p>
+
+  <div class="field" id="f-immig">
+    <label>Current immigration status in Canada <span class="req">*</span></label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="immig" value="International Student"> International Student</label>
+      <label class="choice-opt"><input type="radio" name="immig" value="PGWP Holder"> PGWP Holder</label>
+      <label class="choice-opt"><input type="radio" name="immig" value="Open Work Permit"> Open Work Permit</label>
+      <label class="choice-opt"><input type="radio" name="immig" value="Employer Specific Work Permit"> Employer Specific Work Permit</label>
+      <label class="choice-opt"><input type="radio" name="immig" value="Permanent Resident"> Permanent Resident</label>
+      <label class="choice-opt"><input type="radio" name="immig" value="Canadian Citizen"> Canadian Citizen</label>
+    </div>
+    <div class="err-msg" id="e-immig">Required</div>
+  </div>
+
+  <div class="field">
+    <label>When did you first arrive in Canada?</label>
+    <input type="date" id="arrivalDate">
+    <div class="hint">If you arrived for the first time in 2025, this is very important for your return.</div>
+  </div>
+
+  <div class="field">
+    <label>Did you live outside Canada for any part of 2025?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="outsideCA" value="Yes"> Yes</label>
+      <label class="choice-opt"><input type="radio" name="outsideCA" value="No"> No</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Did you receive any income from outside Canada in 2025?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="foreignIncome" value="Yes"> Yes — I received foreign income</label>
+      <label class="choice-opt"><input type="radio" name="foreignIncome" value="No"> No</label>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(2)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(4)">Next →</button>
+  </div>
+</div>
+
+<!-- ===== PAGE 4: EMPLOYMENT (CHECKBOXES) ===== -->
+<div class="page" id="page4">
+  <div class="page-title">Employment situation</div>
+  <p class="page-sub">Select ALL that apply — you can choose more than one option.</p>
+
+  <div class="field" id="f-employ">
+    <label>What is your current employment situation? <span class="req">*</span> <span class="tag">(Select all that apply)</span></label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="checkbox" name="employ" value="Employed full time (I have T4)" onchange="checkSelfEmploy()"> Employed full time — I have a T4</label>
+      <label class="choice-opt"><input type="checkbox" name="employ" value="Employed part time (I have T4)" onchange="checkSelfEmploy()"> Employed part time — I have a T4</label>
+      <label class="choice-opt"><input type="checkbox" name="employ" value="Student only (no T4)" onchange="checkSelfEmploy()"> Student only — no T4</label>
+      <label class="choice-opt"><input type="checkbox" name="employ" value="Self-employed / Uber / Freelance" onchange="checkSelfEmploy()"> Self-employed / Uber / Freelance / Gig work</label>
+      <label class="choice-opt"><input type="checkbox" name="employ" value="Cash jobs / Tips" onchange="checkSelfEmploy()"> Cash jobs / Tips income</label>
+      <label class="choice-opt"><input type="checkbox" name="employ" value="Not currently working" onchange="checkSelfEmploy()"> Not currently working</label>
+    </div>
+    <div class="err-msg" id="e-employ">Please select at least one option</div>
+  </div>
+
+  <!-- SELF EMPLOYED SECTION -->
+  <div class="cond" id="c-selfemploy">
+    <div class="card-sec">
+      <div class="card-sec-title">🚗 Self-employment / Gig work details</div>
+      <div class="field">
+        <label>What type of self-employment? <span class="tag">(Select all that apply)</span></label>
+        <div class="choice-group">
+          <label class="choice-opt"><input type="checkbox" name="selfType" value="Uber — passenger rides"> Uber — passenger rides</label>
+          <label class="choice-opt"><input type="checkbox" name="selfType" value="Uber Eats — food delivery"> Uber Eats — food delivery</label>
+          <label class="choice-opt"><input type="checkbox" name="selfType" value="DoorDash / Skip the Dishes"> DoorDash / Skip the Dishes</label>
+          <label class="choice-opt"><input type="checkbox" name="selfType" value="Freelance / Consulting"> Freelance / Consulting</label>
+          <label class="choice-opt"><input type="checkbox" name="selfType" value="Cash jobs / General labour"> Cash jobs / General labour</label>
+          <label class="choice-opt"><input type="checkbox" name="selfType" value="Other self-employment"> Other</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Do you have a GST/HST number?</label>
+        <div class="choice-group">
+          <label class="choice-opt"><input type="radio" name="hasHST" value="Yes" onchange="show('c-hst',true)"> Yes — I have a GST/HST number</label>
+          <label class="choice-opt"><input type="radio" name="hasHST" value="No" onchange="show('c-hst',false)"> No</label>
+          <label class="choice-opt"><input type="radio" name="hasHST" value="Not sure" onchange="show('c-hst',false)"> Not sure</label>
+        </div>
+      </div>
+      <div class="cond" id="c-hst">
+        <div class="field"><label>GST/HST number</label><input type="text" id="hstNum" placeholder="e.g. 123456789 RT0001"></div>
+      </div>
+      <div class="alert alert-warn">⚠️ Please have your <strong>Uber Tax Summary</strong> ready (Uber Driver App → Earnings → Tax Summary → 2025 → Download PDF). We will need this to complete your return.</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(3)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(5)">Next →</button>
+  </div>
+</div>
+
+<!-- ===== PAGE 5: MARITAL STATUS ===== -->
+<div class="page" id="page5">
+  <div class="page-title">Marital status</div>
+  <p class="page-sub">Your status as of December 31, 2025 — affects your tax credits and benefits.</p>
+
+  <div class="field" id="f-marital">
+    <label>What is your marital status? <span class="req">*</span></label>
+    <div class="choice-2col">
+      <label class="choice-opt"><input type="radio" name="marital" value="Single" onchange="showMarital('single')"> Single</label>
+      <label class="choice-opt"><input type="radio" name="marital" value="Married" onchange="showMarital('married')"> Married</label>
+      <label class="choice-opt"><input type="radio" name="marital" value="Common-law" onchange="showMarital('married')"> Common-law</label>
+      <label class="choice-opt"><input type="radio" name="marital" value="Separated" onchange="showMarital('separated')"> Separated</label>
+      <label class="choice-opt"><input type="radio" name="marital" value="Divorced" onchange="showMarital('divorced')"> Divorced</label>
+      <label class="choice-opt"><input type="radio" name="marital" value="Widowed" onchange="showMarital('widowed')"> Widowed</label>
+    </div>
+    <div class="err-msg" id="e-marital">Required</div>
+  </div>
+
+  <!-- MARRIED / COMMON-LAW -->
+  <div class="cond" id="c-married">
+    <div class="card-sec">
+      <div class="card-sec-title">💍 Spouse / Partner information</div>
+      <div class="alert alert-info">Both you and your spouse file separate returns but we need their details to calculate credits correctly.</div>
+      <div class="field-row">
+        <div class="field"><label>Spouse's first name</label><input type="text" id="spF" placeholder="First name"></div>
+        <div class="field"><label>Spouse's last name</label><input type="text" id="spL" placeholder="Last name"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Spouse's SIN</label><input type="text" id="spSIN" placeholder="9 digits" maxlength="9"><div class="hint">🔒 Confidential</div></div>
+        <div class="field"><label>Spouse's date of birth</label><input type="date" id="spDOB"></div>
+      </div>
+      <div class="field">
+        <label>Spouse's total net income in 2025</label>
+        <input type="number" id="spIncome" placeholder="Enter 0 if no income">
+        <div class="hint">Enter 0 if your spouse had no income in 2025.</div>
+      </div>
+      <div class="field">
+        <label>Does your spouse also need to file with Trillium Tax?</label>
+        <div class="choice-group">
+          <label class="choice-opt"><input type="radio" name="spFile" value="Yes — file for both of us"> Yes — please file for both of us</label>
+          <label class="choice-opt"><input type="radio" name="spFile" value="No — only file for me"> No — only my return</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEPARATED -->
+  <div class="cond" id="c-separated">
+    <div class="card-sec">
+      <div class="card-sec-title">📋 Separation details</div>
+      <div class="field-row">
+        <div class="field"><label>Date of separation</label><input type="date" id="sepDate"><div class="hint">CRA requires exact date. You are separated after 90+ days apart.</div></div>
+        <div class="field"><label>Former spouse's full name</label><input type="text" id="sepName" placeholder="Full name"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Former spouse's SIN</label><input type="text" id="sepSIN" placeholder="9 digits" maxlength="9"></div>
+        <div class="field"><label>Former spouse's net income in 2025</label><input type="number" id="sepIncome" placeholder="Enter 0 if unknown"></div>
+      </div>
+      <div class="field">
+        <label>Support payments</label>
+        <div class="choice-group">
+          <label class="choice-opt"><input type="radio" name="sepSupport" value="I am paying support"> I am paying spousal/child support</label>
+          <label class="choice-opt"><input type="radio" name="sepSupport" value="I am receiving support"> I am receiving spousal/child support</label>
+          <label class="choice-opt"><input type="radio" name="sepSupport" value="No support payments"> No support payments</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIVORCED -->
+  <div class="cond" id="c-divorced">
+    <div class="card-sec">
+      <div class="card-sec-title">📄 Divorce & support details</div>
+      <div class="alert alert-warn">⚠️ Spousal support paid = tax deductible. Spousal support received = taxable income. Child support = neither.</div>
+      <div class="field">
+        <label>Spousal support situation</label>
+        <div class="choice-group">
+          <label class="choice-opt"><input type="radio" name="divSupport" value="I am paying spousal support"> I am paying spousal support</label>
+          <label class="choice-opt"><input type="radio" name="divSupport" value="I am receiving spousal support"> I am receiving spousal support</label>
+          <label class="choice-opt"><input type="radio" name="divSupport" value="No spousal support"> No spousal support</label>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Total spousal support amount in 2025</label><input type="number" id="divAmt" placeholder="e.g. 6000"></div>
+        <div class="field"><label>Ex-spouse's SIN (needed for deduction)</label><input type="text" id="divSIN" placeholder="9 digits" maxlength="9"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIDOWED -->
+  <div class="cond" id="c-widowed">
+    <div class="card-sec">
+      <div class="card-sec-title">🕊️ Spouse's passing details</div>
+      <div class="alert alert-info">We are very sorry for your loss. We will handle this with care.</div>
+      <div class="field">
+        <label>Date of spouse's passing</label>
+        <input type="date" id="spDeath">
+        <div class="hint">You can still claim the full spousal amount for the year your spouse passed.</div>
+      </div>
+      <div class="field">
+        <label>Do you need us to file a final return for your deceased spouse?</label>
+        <div class="choice-group">
+          <label class="choice-opt"><input type="radio" name="decFile" value="Yes — file for deceased spouse too"> Yes — please file for my spouse too</label>
+          <label class="choice-opt"><input type="radio" name="decFile" value="No — only my return"> No — only my return</label>
+          <label class="choice-opt"><input type="radio" name="decFile" value="Not sure — please advise"> Not sure — please advise me</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(4)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(6)">Next →</button>
+  </div>
+</div>
+
+<!-- ===== PAGE 6: TAX SLIPS ===== -->
+<div class="page" id="page6">
+  <div class="page-title">Tax slips & income</div>
+  <p class="page-sub">Tell us about all your income documents for the 2025 tax year.</p>
+
+  <div class="field">
+    <label>Which tax slips do you currently have? <span class="req">*</span> <span class="tag">(Select all that apply)</span></label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="checkbox" name="slips" value="T4 — Employment income"> T4 — Employment income (from employer)</label>
+      <label class="choice-opt"><input type="checkbox" name="slips" value="T4A — Scholarships / bursaries / pension"> T4A — Scholarships, bursaries, or pension</label>
+      <label class="choice-opt"><input type="checkbox" name="slips" value="T2202 — Tuition"> T2202 — Tuition (from school or college)</label>
+      <label class="choice-opt"><input type="checkbox" name="slips" value="T5 — Investment or bank interest"> T5 — Investment or bank interest income</label>
+      <label class="choice-opt"><input type="checkbox" name="slips" value="T4E — Employment Insurance (EI)"> T4E — Employment Insurance (EI)</label>
+      <label class="choice-opt"><input type="checkbox" name="slips" value="T4AP — CPP payments"> T4AP — CPP payments (for seniors)</label>
+      <label class="choice-opt"><input type="checkbox" name="slips" value="None yet — still waiting"> None yet — still waiting for slips</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Did you receive any government benefits in 2025? <span class="tag">(Select all that apply)</span></label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="checkbox" name="benefits" value="EI — Employment Insurance"> EI — Employment Insurance</label>
+      <label class="choice-opt"><input type="checkbox" name="benefits" value="Maternity / Parental benefits"> Maternity or Parental benefits</label>
+      <label class="choice-opt"><input type="checkbox" name="benefits" value="ODSP or Ontario Works"> ODSP or Ontario Works</label>
+      <label class="choice-opt"><input type="checkbox" name="benefits" value="No government benefits"> No government benefits</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Do you have RRSP contributions for 2025?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="rrsp" value="Yes — I contributed to RRSP in 2025"> Yes — I contributed to RRSP in 2025</label>
+      <label class="choice-opt"><input type="radio" name="rrsp" value="No"> No</label>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(5)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(7)">Next →</button>
+  </div>
+</div>
+
+<!-- ===== PAGE 7: STUDENT & TUITION ===== -->
+<div class="page" id="page7">
+  <div class="page-title">Student & tuition credits</div>
+  <p class="page-sub">Tuition credits can significantly reduce your taxes — even from past years!</p>
+
+  <div class="field">
+    <label>Are you currently a student or were you a student in 2025?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="student" value="Yes — Full-time student in 2025" onchange="show('c-student',true)"> Yes — Full-time student in 2025</label>
+      <label class="choice-opt"><input type="radio" name="student" value="Yes — Part-time student in 2025" onchange="show('c-student',true)"> Yes — Part-time student in 2025</label>
+      <label class="choice-opt"><input type="radio" name="student" value="No — Not a student in 2025" onchange="show('c-student',false)"> No — Not a student in 2025</label>
+    </div>
+  </div>
+
+  <div class="cond" id="c-student">
+    <div class="card-sec">
+      <div class="card-sec-title">🎓 2025 Tuition details (T2202)</div>
+      <div class="alert alert-info">Your college or university uploads your T2202 slip to CRA automatically every February. You can also find it in your student portal or CRA My Account.</div>
+      <div class="field-row">
+        <div class="field"><label>School / College / University name</label><input type="text" id="schoolName" placeholder="e.g. Humber College"></div>
+        <div class="field"><label>Total tuition paid in 2025</label><input type="number" id="tuition2025" placeholder="e.g. 3500"></div>
+      </div>
+      <div class="field">
+        <label>How many months were you enrolled in 2025?</label>
+        <div class="choice-group choice-2col">
+          <label class="choice-opt"><input type="radio" name="studMonths" value="1 month"> 1 month</label>
+          <label class="choice-opt"><input type="radio" name="studMonths" value="2 months"> 2 months</label>
+          <label class="choice-opt"><input type="radio" name="studMonths" value="3 months"> 3 months</label>
+          <label class="choice-opt"><input type="radio" name="studMonths" value="4 months"> 4 months</label>
+          <label class="choice-opt"><input type="radio" name="studMonths" value="5-6 months"> 5–6 months</label>
+          <label class="choice-opt"><input type="radio" name="studMonths" value="7-8 months"> 7–8 months</label>
+          <label class="choice-opt"><input type="radio" name="studMonths" value="Full year (8+ months)"> Full year (8+ months)</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Do you have unused tuition credits from previous years (carry forward)?</label>
+    <div class="hint" style="margin-bottom:8px;">Check CRA My Account → Benefits & Credits → Carryover Amounts → Federal Tuition to find your number.</div>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="hasCarryFwd" value="Yes" onchange="show('c-carryfwd',true)"> Yes — I have unused tuition credits from prior years</label>
+      <label class="choice-opt"><input type="radio" name="hasCarryFwd" value="No" onchange="show('c-carryfwd',false)"> No</label>
+      <label class="choice-opt"><input type="radio" name="hasCarryFwd" value="Not sure" onchange="show('c-carryfwd',false)"> Not sure — please check for me</label>
+    </div>
+  </div>
+
+  <div class="cond" id="c-carryfwd">
+    <div class="card-sec">
+      <div class="card-sec-title">📊 Tuition carry forward amounts</div>
+      <div class="alert alert-green">✅ Great news! These credits can significantly reduce your taxes. Find both amounts in your CRA My Account → Carryover Amounts → Federal Tuition & Education Amounts table.</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Federal carry forward amount</label>
+          <input type="number" id="fedCarry" placeholder="e.g. 35277">
+          <div class="hint">From CRA My Account — "Amount available for carry forward" column for 2025</div>
+        </div>
+        <div class="field">
+          <label>Provincial carry forward amount</label>
+          <input type="number" id="provCarry" placeholder="e.g. 35277">
+          <div class="hint">Usually the same as federal — check CRA My Account to confirm</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Did you pay student loan interest in 2025?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="loanInterest" value="Yes — I paid student loan interest"> Yes — I paid student loan interest</label>
+      <label class="choice-opt"><input type="radio" name="loanInterest" value="No"> No</label>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(6)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(8)">Next →</button>
+  </div>
+</div>
+
+<!-- ===== PAGE 8: CHILDREN ===== -->
+<div class="page" id="page8">
+  <div class="page-title">Children & dependants</div>
+  <p class="page-sub">Do you have any children? This affects your Canada Child Benefit and credits.</p>
+
+  <div class="field">
+    <label>Do you have any children or dependants? <span class="req">*</span></label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="hasKids" value="Yes" onchange="toggleKids(true)"> Yes — I have children or dependants</label>
+      <label class="choice-opt"><input type="radio" name="hasKids" value="No" onchange="toggleKids(false)"> No</label>
+    </div>
+  </div>
+
+  <div class="cond" id="c-kids">
+    <div class="card-sec">
+      <div class="card-sec-title">👶 Children details</div>
+      <div class="alert alert-info">Add each child separately. We need their name, SIN, and date of birth for Canada Child Benefit and eligible credits.</div>
+      <div id="kidsList"></div>
+      <button type="button" class="btn btn-secondary" style="font-size:13px;margin-top:8px;" onclick="addKid()">+ Add a child</button>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label>Did you pay for childcare in 2025? (daycare, babysitter)</label>
+      <div class="choice-group">
+        <label class="choice-opt"><input type="radio" name="childcare" value="Yes — I have official childcare receipts"> Yes — I have official receipts</label>
+        <label class="choice-opt"><input type="radio" name="childcare" value="No"> No</label>
+      </div>
+      <div class="hint" style="margin-top:6px;">If yes, please have receipts with the provider's SIN ready.</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(7)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(9)">Next →</button>
+  </div>
+</div>
+
+<!-- ===== PAGE 9: DEDUCTIONS ===== -->
+<div class="page" id="page9">
+  <div class="page-title">Deductions & credits</div>
+  <p class="page-sub">These can reduce your taxes or increase your refund — don't miss them!</p>
+
+  <div class="field">
+    <label>Did you have any medical expenses in 2025? <span class="tag">(Select all that apply — only if you have official receipts)</span></label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="checkbox" name="medical" value="Prescription medication (I have receipts)"> Prescription medication <span style="font-size:11px;color:var(--muted);">(I have receipts)</span></label>
+      <label class="choice-opt"><input type="checkbox" name="medical" value="Dental expenses (I have receipts)"> Dental expenses <span style="font-size:11px;color:var(--muted);">(I have receipts)</span></label>
+      <label class="choice-opt"><input type="checkbox" name="medical" value="Vision / Glasses / Contacts (I have receipts)"> Vision / Glasses / Contacts <span style="font-size:11px;color:var(--muted);">(I have receipts)</span></label>
+      <label class="choice-opt"><input type="checkbox" name="medical" value="Physiotherapy / Chiro / Massage (I have receipts)"> Physiotherapy / Chiro / Massage <span style="font-size:11px;color:var(--muted);">(I have receipts)</span></label>
+      <label class="choice-opt"><input type="checkbox" name="medical" value="No medical expenses"> No medical expenses</label>
+    </div>
+    <div class="hint" style="margin-top:6px;">⚠️ Medical expenses can only be claimed if you have official receipts. Total must be over $2,635 to qualify as a deduction (Line 33099 on T1 return).</div>
+  </div>
+
+  <div class="field">
+    <label>Did you make charitable donations in 2025?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="donations" value="Yes — I have official donation receipts"> Yes — I have official donation receipts</label>
+      <label class="choice-opt"><input type="radio" name="donations" value="No"> No</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Did you move to a new city for work or school in 2025? <span class="tag">(CRA Line 21900 — only if you have valid receipts)</span></label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="moved" value="Yes — moved for work (I have receipts)"> Yes — I moved for a new job or business <span style="font-size:11px;color:var(--muted);">(I have valid moving receipts)</span></label>
+      <label class="choice-opt"><input type="radio" name="moved" value="Yes — moved for school (I have receipts)"> Yes — I moved to attend full-time school or college <span style="font-size:11px;color:var(--muted);">(I have valid moving receipts)</span></label>
+      <label class="choice-opt"><input type="radio" name="moved" value="No"> No — I did not move in 2025</label>
+    </div>
+    <div class="hint" style="margin-top:6px;">⚠️ CRA Rule: Your new home must be at least <strong>40 km closer</strong> to your new workplace or school than your old home was. You must also have valid receipts for moving costs (truck rental, gas, temporary accommodation etc.) to claim this deduction on Line 21900.</div>
+  </div>
+
+  <div class="field">
+    <label>Did you work from home in 2025?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="wfh" value="Yes — I worked from home"> Yes — I worked from home</label>
+      <label class="choice-opt"><input type="radio" name="wfh" value="No"> No</label>
+    </div>
+    <div class="hint">You may be able to claim home office expenses.</div>
+  </div>
+
+  <div class="field">
+    <label>Did you buy a home for the first time in 2025?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="firstHome" value="Yes — First time home buyer"> Yes — First time home buyer</label>
+      <label class="choice-opt"><input type="radio" name="firstHome" value="No"> No</label>
+    </div>
+    <div class="hint">First time home buyers may be eligible for a $1,500 tax credit!</div>
+  </div>
+
+  <div class="field">
+    <label>Any other deductions or special situations? <span class="tag">(Select all that apply)</span></label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="checkbox" name="other" value="Disability Tax Credit (T2201 on file with CRA)"> Disability Tax Credit (T2201 approved by CRA)</label>
+      <label class="choice-opt"><input type="checkbox" name="other" value="Rental income from property"> Rental income from property</label>
+      <label class="choice-opt"><input type="checkbox" name="other" value="Capital gains from investments"> Capital gains from investments</label>
+      <label class="choice-opt"><input type="checkbox" name="other" value="None of the above"> None of the above</label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Any additional notes or special situations?</label>
+    <textarea id="notes" placeholder="e.g. I worked in two provinces, I have a unique situation, I need help with something specific..."></textarea>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(8)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(10)">Next →</button>
+  </div>
+</div>
+
+<!-- ===== PAGE 10: REFERRAL & CONSENT ===== -->
+<div class="page" id="page10">
+  <div class="page-title">Almost done!</div>
+  <p class="page-sub">Enter your referral code if you have one, then read and confirm your consent.</p>
+
+  <!-- REFERRAL BADGE -->
+  <div class="ref-badge">
+    <div class="rb-title">Have a referral code? Get</div>
+    <div class="rb-offer">$5 OFF your filing!</div>
+    <div class="rb-desc">Enter the referral code shared with you by a friend. You will also receive YOUR OWN referral code by email — share it with others and earn 10% commission on every person who files!</div>
+    <input type="text" class="ref-input" id="refCode" placeholder="Enter referral code e.g. TTS-AB12-3456" oninput="validateRef(this.value)">
+    <div class="ref-msg" id="refMsg"></div>
+  </div>
+
+  <div class="field">
+    <label>Were you referred by someone?</label>
+    <div class="choice-group">
+      <label class="choice-opt"><input type="radio" name="referred" value="Yes — I have a referral code"> Yes — I used the referral code above</label>
+      <label class="choice-opt"><input type="radio" name="referred" value="No — I found Trillium myself"> No — I found Trillium Tax myself</label>
+    </div>
+  </div>
+
+  <!-- CONSENT -->
+  <div class="sec-div">Consent & authorization</div>
+
+  <div class="alert alert-info">By submitting this form you confirm all information is accurate and you authorize Trillium Tax Services to prepare and file your 2025 tax return on your behalf.</div>
+
+  <div class="field">
+    <div class="choice-group">
+      <label class="choice-opt" id="consentOpt">
+        <input type="checkbox" id="consent">
+        I confirm all information is accurate and I authorize Trillium Tax Services to file my tax return. I understand my SIN and personal data will be kept strictly confidential and used only for tax filing purposes.
+      </label>
+    </div>
+    <div id="e-consent" style="display:none;color:var(--error);font-size:12px;margin-top:6px;font-weight:700;">Please check the consent box to proceed.</div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTo(9)">← Back</button>
+    <button class="btn btn-submit" id="submitBtn" onclick="submitForm()">Submit my intake form ✓</button>
+  </div>
+</div>
+
+<!-- ===== PAGE 11: SUCCESS ===== -->
+<div class="page" id="page11">
+  <div class="success-wrap">
+    <div class="success-icon">🍀</div>
+    <h2>Thank you!</h2>
+    <p>Your intake form has been submitted successfully. A member of the Trillium Tax Services team will contact you within <strong>24 hours</strong>.</p>
+    <p>Check your email — we've sent you a confirmation with your <strong>personal referral code</strong> to share with friends and earn commission!</p>
+    <div class="success-code">
+      <div class="sc-lbl">Your personal referral code is on its way to your email</div>
+      <div class="sc-val">Share it · Earn 10% commission!</div>
+    </div>
+    <p style="margin-top:20px;font-size:13px;color:var(--teal);font-weight:800;">Trillium Tax Services — Filing made simple. 🍀</p>
+  </div>
+</div>
+
+</div>
+
+<script>
+  // ============================================================
+  // ⬇️ PASTE YOUR GOOGLE APPS SCRIPT URL HERE
+  // ============================================================
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyK4VQE49TxSzzdL9g3mivveEwvgjF2dTEX1xPnGCZBmnUlup6Kww1Hm23Sk6FqHsfZ/exec';
+
+  const TOTAL = 10;
+  let cur = 1;
+  let kidCount = 0;
+
+  function goTo(n) {
+    document.getElementById('page' + cur).classList.remove('active');
+    cur = n;
+    document.getElementById('page' + cur).classList.add('active');
+    const pct = Math.round(((cur - 1) / TOTAL) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent =
+      cur <= TOTAL ? 'Step ' + cur + ' of ' + TOTAL : 'Complete!';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function show(id, visible) {
+    document.getElementById(id)?.classList.toggle('show', visible);
+  }
+
+  function checkSelfEmploy() {
+    const checked = Array.from(document.querySelectorAll('input[name="employ"]:checked'))
+      .some(el => el.value === 'Self-employed / Uber / Freelance' || el.value === 'Cash jobs / Tips');
+    show('c-selfemploy', checked);
+  }
+
+  function showMarital(type) {
+    ['married','separated','divorced','widowed'].forEach(t => show('c-'+t, false));
+    if (['married','separated','divorced','widowed'].includes(type)) show('c-'+type, true);
+  }
+
+  function toggleKids(show_) {
+    show('c-kids', show_);
+    if (show_ && kidCount === 0) addKid();
+  }
+
+  function addKid() {
+    kidCount++;
+    const list = document.getElementById('kidsList');
+    const div = document.createElement('div');
+    div.style.cssText = 'background:#f2f9f9;border-radius:10px;padding:14px;margin-bottom:12px;border:1px solid #cfe0e0;';
+    div.innerHTML = `
+      <div style="font-size:12px;font-weight:800;color:#0d6e6e;margin-bottom:10px;">Child ${kidCount}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;">Full name</label>
+        <input type="text" name="childName${kidCount}" placeholder="Child's full name" style="width:100%;padding:9px 12px;border:1.5px solid #cfe0e0;border-radius:8px;font-family:Nunito,sans-serif;font-size:13px;"></div>
+        <div><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;">Date of birth</label>
+        <input type="date" name="childDOB${kidCount}" style="width:100%;padding:9px 12px;border:1.5px solid #cfe0e0;border-radius:8px;font-family:Nunito,sans-serif;font-size:13px;"></div>
+      </div>
+      <div style="margin-top:8px;">
+        <label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px;">SIN (optional for young children)</label>
+        <input type="text" name="childSIN${kidCount}" placeholder="9 digits" maxlength="9" style="width:100%;padding:9px 12px;border:1.5px solid #cfe0e0;border-radius:8px;font-family:Nunito,sans-serif;font-size:13px;">
+      </div>`;
+    list.appendChild(div);
+  }
+
+  function validateRef(v) {
+    const msg = document.getElementById('refMsg');
+    const clean = v.trim().toUpperCase();
+    document.getElementById('refCode').value = clean;
+    if (!clean) { msg.textContent = ''; return; }
+    if (clean.startsWith('TTS-') && clean.length >= 10) {
+      msg.textContent = '✓ Valid code! Your $5 discount will be applied.';
+      msg.className = 'ref-msg ok';
+    } else {
+      msg.textContent = 'Code format looks incorrect. Valid codes start with TTS-';
+      msg.className = 'ref-msg bad';
+    }
+  }
+
+  function getChecked(name) {
+    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(e => e.value).join(', ') || '';
+  }
+  function getRadio(name) {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : '';
+  }
+  function v(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+  function collectKids() {
+    let out = [];
+    for (let i = 1; i <= kidCount; i++) {
+      const n = document.querySelector(`input[name="childName${i}"]`)?.value || '';
+      const d = document.querySelector(`input[name="childDOB${i}"]`)?.value || '';
+      const s = document.querySelector(`input[name="childSIN${i}"]`)?.value || '';
+      if (n) out.push(`${n} (DOB:${d} SIN:${s||'N/A'})`);
+    }
+    return out.join(' | ') || 'None';
+  }
+
+  function submitForm() {
+    const consent = document.getElementById('consent');
+    const err = document.getElementById('e-consent');
+    if (!consent.checked) { err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = 'Submitting...';
+    btn.disabled = true;
+
+    const data = {
+      timestamp: new Date().toLocaleString('en-CA'),
+      firstName: v('fname'), lastName: v('lname'),
+      fullName: (v('fname') + ' ' + v('lname')).trim(),
+      email: v('email'), phone: v('phone'), dob: v('dob'), sin: v('sin'),
+      filedBefore: getRadio('filedBefore'),
+      address: v('address'), city: v('city'), postalCode: v('postal'), province: v('province'),
+      rentPaid: getRadio('rent'), landlordName: v('landlordName'), monthlyRent: v('rentAmt'),
+      ownsHome: getRadio('ownHome'),
+      immigrationStatus: getRadio('immig'), arrivalDate: v('arrivalDate'),
+      outsideCanada: getRadio('outsideCA'), foreignIncome: getRadio('foreignIncome'),
+      employmentSituation: getChecked('employ'),
+      selfEmployedType: getChecked('selfType'),
+      hasHST: getRadio('hasHST'), hstNumber: v('hstNum'),
+      maritalStatus: getRadio('marital'),
+      spouseFirstName: v('spF'), spouseLastName: v('spL'),
+      spouseSIN: v('spSIN'), spouseDOB: v('spDOB'), spouseIncome: v('spIncome'),
+      spouseFileWithUs: getRadio('spFile'),
+      separationDate: v('sepDate'), separatedSpouseName: v('sepName'),
+      separatedSpouseSIN: v('sepSIN'), separatedSpouseIncome: v('sepIncome'),
+      supportPayments: getRadio('sepSupport'),
+      divorcedSupportType: getRadio('divSupport'), divorcedSupportAmount: v('divAmt'),
+      divorcedExSpouseSIN: v('divSIN'),
+      spouseDeathDate: v('spDeath'), fileDeceasedSpouse: getRadio('decFile'),
+      taxSlips: getChecked('slips'), governmentBenefits: getChecked('benefits'),
+      rrsp: getRadio('rrsp'),
+      studentStatus: getRadio('student'), schoolName: v('schoolName'),
+      tuitionAmount2025: v('tuition2025'), studyMonths: getRadio('studMonths'),
+      hasCarryForward: getRadio('hasCarryFwd'),
+      federalCarryForward: v('fedCarry'), provincialCarryForward: v('provCarry'),
+      studentLoanInterest: getRadio('loanInterest'),
+      hasChildren: getRadio('hasKids'), childrenDetails: collectKids(),
+      childcare: getRadio('childcare'),
+      medicalExpenses: getChecked('medical'), donations: getRadio('donations'),
+      moved: getRadio('moved'), workedFromHome: getRadio('wfh'),
+      firstTimeBuyer: getRadio('firstHome'), otherDeductions: getChecked('other'),
+      notes: v('notes'),
+      referralCodeUsed: v('refCode'), referredBy: getRadio('referred'),
+    };
+
+    fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).finally(() => {
+      goTo(11);
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressLabel').textContent = 'Submitted! ✓';
+    });
+  }
+
+  // Style selections
+  document.addEventListener('change', function(e) {
+    if (e.target.type === 'radio') {
+      const g = e.target.closest('.choice-group, .choice-2col');
+      if (g) { g.querySelectorAll('.choice-opt').forEach(o => o.classList.remove('selected')); e.target.closest('.choice-opt')?.classList.add('selected'); }
+    }
+    if (e.target.type === 'checkbox') e.target.closest('.choice-opt')?.classList.toggle('selected', e.target.checked);
+  });
+
+  goTo(1);
+</script>
+</body>
+</html>
 
